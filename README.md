@@ -15,6 +15,7 @@ An AI slop web application that splits Microsoft Word (DOCX) files by headings a
 
 ## Usage
 
+### Local Development
 1. Clone this repository
 2. Start the development server:
 ```bash
@@ -22,6 +23,23 @@ python3 -m http.server 3000
 ```
 3. Open your browser and navigate to `http://localhost:3000`
 4. Upload a DOCX file and click "Split Document"
+
+### Web Server Deployment
+1. Upload the following files to your web server:
+   - `index.html`
+   - `app.js`
+   - `styles.css`
+   - `package.json`
+   - `package-lock.json`
+   - `LICENSE`
+   - `README.md`
+
+2. Ensure your web server:
+   - Serves static files
+   - Has proper MIME type configuration for `.docx` files
+   - Allows file downloads
+
+3. Access the application through your web server's URL
 
 ## Dependencies
 
