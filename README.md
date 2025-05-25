@@ -1,5 +1,9 @@
 # DOCX Splitter
 
+![PepeAgent](https://media.tenor.com/WF8QZgZzv0YAAAAC/pepe-agent.gif)
+
+
+
 An AI slop web application that splits Microsoft Word (DOCX) files by headings and saves them as separate files.
 
 ## Features
