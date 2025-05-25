@@ -12,6 +12,7 @@ An AI slop web application that splits Microsoft Word (DOCX) files by headings a
 - Clean and modern web interface
 - Automatic file naming based on headings
 - Works in any modern web browser
+- Only produces HTML files at the moment.
 
 ## Usage
 
