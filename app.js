@@ -106,27 +106,35 @@ document.addEventListener('DOMContentLoaded', () => {
 	async function saveSectionsAsDocx(sections) {
 		for (let i = 0; i < sections.length; i++) {
 			const section = sections[i];
-			const filename = `${String(i + 1).padStart(2, '0')}_${sanitizeFilename(section.title)}.docx`;
+			const filename = `${String(i + 1).padStart(2, '0')}_${sanitizeFilename(section.title)}.html`;
 			 
 			// Create a new HTML document
 			const docHtml = `
-				<html>
-					<head>
-						<meta charset="UTF-8">
-						<style>
-							h1, h2, h3, h4, h5, h6 { margin: 1em 0; }
-							p { margin: 0.5em 0; }
-						</style>
-					</head>
-					<body>
-						<h1>${section.title}</h1>
-						<div>${section.content}</div>
-					</body>
-				</html>
+			<!DOCTYPE html>
+			<html lang="en">
+			<head>
+				<meta charset="UTF-8">
+				<meta name="viewport" content="width=device-width, initial-scale=1.0">
+				<title>${section.title}</title>
+				<style>
+					body { font-family: Arial, sans-serif; line-height: 1.6; margin: 2rem; }
+					h1 { font-size: 2em; margin: 1.5em 0; }
+					h2 { font-size: 1.5em; margin: 1.2em 0; }
+					h3 { font-size: 1.2em; margin: 1em 0; }
+					h4 { font-size: 1em; margin: 0.8em 0; }
+					p { margin: 0.5em 0; }
+					div.content { margin: 1em 0; }
+				</style>
+			</head>
+			<body>
+				<h1>${section.title}</h1>
+				<div class="content">${section.content}</div>
+			</body>
+			</html>
 			`;
 
 			// Create a blob and save it
-			const blob = new Blob([docHtml], { type: 'application/msword' });
+			const blob = new Blob([docHtml], { type: 'text/html' });
 			 
 			// Add a small delay between downloads to avoid browser limits
 			await new Promise(resolve => setTimeout(resolve, 1000)); // 1 second delay
