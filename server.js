@@ -2,7 +2,7 @@ const http = require('http');
 const fs = require('fs');
 const path = require('path');
 
-const port = 3002;
+const port = 3003;
 
 const server = http.createServer((req, res) => {
     const filePath = path.join(__dirname, req.url === '/' ? 'index.html' : req.url);

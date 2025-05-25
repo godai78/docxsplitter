@@ -1,10 +1,6 @@
 # DOCX Splitter
 
-![PepeAgent](pepeagent.gif)
-
-
-
-An AI slop web application that splits Microsoft Word (DOCX) files by headings and saves them as separate files.
+A web application that splits Microsoft Word (DOCX) files by headings and saves them as separate HTML files.
 
 ## Features
 
@@ -12,32 +8,40 @@ An AI slop web application that splits Microsoft Word (DOCX) files by headings a
 - Clean and modern web interface
 - Automatic file naming based on headings
 - Works in any modern web browser
-- Only produces HTML files at the moment.
+- Generates valid HTML files with proper styling
+- Supports multiple language character sets in filenames
+- Built-in Node.js server for easy deployment
 
 ## Usage
 
 ### Local Development
 1. Clone this repository
-2. Start the development server:
+2. Install dependencies:
 ```bash
-python3 -m http.server 3000
+npm install
 ```
-3. Open your browser and navigate to `http://localhost:3000`
-4. Upload a DOCX file and click "Split Document"
+3. Start the server:
+```bash
+node server.js
+```
+4. Open your browser and navigate to `http://localhost:3003`
+5. Upload a DOCX file and click "Split Document"
 
 ### Web Server Deployment
 1. Upload the following files to your web server:
    - `index.html`
    - `app.js`
    - `styles.css`
+   - `server.js`
    - `package.json`
    - `package-lock.json`
    - `LICENSE`
    - `README.md`
+   - `pepeagent.gif`
 
 2. Ensure your web server:
    - Serves static files
-   - Has proper MIME type configuration for `.docx` files
+   - Has Node.js installed
    - Allows file downloads
 
 3. Access the application through your web server's URL
@@ -46,7 +50,7 @@ python3 -m http.server 3000
 
 - mammoth: For DOCX file conversion
 - file-saver: For saving files
-- http-server: For serving the application
+- http: For serving the application
 
 ## License
 
