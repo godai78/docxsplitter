@@ -8,7 +8,7 @@ A web application that splits Microsoft Word (DOCX) files by headings and saves 
 - Clean and modern web interface
 - Automatic file naming based on headings
 - Works in any modern web browser
-- Generates valid HTML files with proper styling
+- Generates valid HTML files with proper styling (see the `rtfoutput` branch for `rtf` generator)
 - Supports multiple language character sets in filenames
 - Built-in Node.js server for easy deployment
 
