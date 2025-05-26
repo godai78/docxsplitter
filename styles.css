@@ -26,6 +26,13 @@ h1 {
 	margin-bottom: 20px;
 }
 
+h3 {
+	color: #333;
+	text-align: center;
+	margin-bottom: 20px;
+}
+
+
 .upload-section {
 	display: flex;
 	gap: 10px;

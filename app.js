@@ -127,26 +127,38 @@ document.addEventListener('DOMContentLoaded', () => {
 			const section = sections[i];
 			const filename = `${String(i + 1).padStart(2, '0')}_${sanitizeFilename(section.title)}.rtf`;
 			
-			// Create a more robust RTF document template with proper line breaks, encoding, and codepage
-			const rtfHeader = `{\\rtf1\\ansi\\ansicpg${globalCodepage}\\deff0\n{\\fonttbl{\\f0\\fnil\\fcharset0 Arial;}}\n{\\colortbl ;\\red0\\green0\\blue0;}\n\\viewkind4\\uc1\\pard\\cf1\\f0\\fs24\n`;
-			const rtfFooter = '\\par\n}';
+			// Create RTF header according to spec
+			const rtfHeader = `{\\rtf1\\ansi\\ansicpg65001\\deff0\\deflang1033
+{\\fonttbl{\\f0\\fnil\\fcharset0 Arial;}}
+{\\colortbl ;\\red0\\green0\\blue0;}
+\\viewkind4\\uc1\\pard\\cf1\\f0\\fs24`;
 			
-			// Convert HTML content to plain text while preserving line breaks
-			let plainContent = section.content.replace(/<br\s*\/?>/gi, '\\line\n')
-				.replace(/<p>/gi, '')
-				.replace(/<\/p>/gi, '\\par\n')
-				.replace(/<[^>]*>/g, '');
+			// First, split content into paragraphs
+			const paragraphs = section.content.split(/<\/?p>/).filter(p => p.trim());
 			
-			// Ensure proper RTF encoding (escape special characters and handle language-specific letters)
-			plainContent = plainContent.replace(/[\\{}]/g, '\\$&')
-				.replace(/[^\x00-\x7F]/g, function(char) {
-					return '\\u' + char.charCodeAt(0) + '?';
-				});
+			// Process each paragraph
+			let rtfParagraphs = paragraphs.map(p => {
+				// Remove any remaining HTML tags
+				let text = p.replace(/<[^>]*>/g, '');
+				
+				// Handle line breaks within paragraphs
+				text = text.replace(/<br\s*\/?>/gi, '\\line ');
+				
+				// Ensure proper RTF encoding
+				text = text.replace(/[\\{}]/g, '\\$&')
+					.replace(/[^\x00-\x7F]/g, function(char) {
+						return '\\u' + char.charCodeAt(0) + '?';
+					});
+				
+				return text.trim();
+			});
 			
-			// Treat \par markers as new paragraph markers
-			plainContent = plainContent.replace(/\\par/g, '\\par\n');
-			
-			const rtfContent = rtfHeader + '\\b ' + section.title + '\\b0\\par\n' + plainContent + rtfFooter;
+			// Create the RTF content with proper paragraph formatting
+			const rtfContent = rtfHeader + 
+				'\\par\n' + 
+				'{\\b ' + section.title + '}\\b0\\par\n' + 
+				rtfParagraphs.join('\\par\n') + 
+				'\\par\n}';
 			
 			// Create a blob and save it
 			const blob = new Blob([rtfContent], { type: 'application/rtf' });
