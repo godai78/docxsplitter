@@ -6,6 +6,10 @@ A CC0 AI slop app by godai
 
 DOCX splitter can be fed a `.docx` file. It will take the file, find all headings and split the file, turning each heading with corresponding body text into a new file. It will then attempt to download and save all the files.
 
+You can follow the usage note in the README file or you can upload the app to your webserver (files are mentioned in the README) and run it from there. I cannot guarantee safety.
+
+I refuse any responsibility for the effect of using this app. It is provided as-is.
+
 ## FAQ
 
 * Why only `.docx` input?
