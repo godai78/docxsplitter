@@ -50,6 +50,10 @@ node server.js
 
 3. Access the application through your web server's URL
 
+### GitHub Pages
+
+A test version of the app based off the `master` branch runs at https://godai78.github.io/docxsplitter/
+
 ## Features in Detail
 
 ### RTF Generation
