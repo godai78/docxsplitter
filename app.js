@@ -127,7 +127,7 @@ document.addEventListener('DOMContentLoaded', () => {
 			const section = sections[i];
 			const filename = `${String(i + 1).padStart(2, '0')}_${sanitizeFilename(section.title)}.rtf`;
 			
-			// Create RTF header according to spec
+			// Create RTF header with proper Unicode support
 			const rtfHeader = `{\\rtf1\\ansi\\ansicpg65001\\deff0\\deflang1033
 {\\fonttbl{\\f0\\fnil\\fcharset0 Arial;}}
 {\\colortbl ;\\red0\\green0\\blue0;}
@@ -144,11 +144,20 @@ document.addEventListener('DOMContentLoaded', () => {
 				// Handle line breaks within paragraphs
 				text = text.replace(/<br\s*\/?>/gi, '\\line ');
 				
-				// Ensure proper RTF encoding
-				text = text.replace(/[\\{}]/g, '\\$&')
-					.replace(/[^\x00-\x7F]/g, function(char) {
-						return '\\u' + char.charCodeAt(0) + '?';
-					});
+				// Convert text to RTF format with proper Unicode handling
+				text = text.split('').map(char => {
+					const code = char.charCodeAt(0);
+					if (code < 128) {
+						// ASCII characters
+						if (char === '\\' || char === '{' || char === '}') {
+							return '\\' + char;
+						}
+						return char;
+					} else {
+						// Unicode characters - use \uN? format
+						return '\\u' + code + '?';
+					}
+				}).join('');
 				
 				return text.trim();
 			});
@@ -156,7 +165,17 @@ document.addEventListener('DOMContentLoaded', () => {
 			// Create the RTF content with proper paragraph formatting
 			const rtfContent = rtfHeader + 
 				'\\par\n' + 
-				'{\\b ' + section.title + '}\\b0\\par\n' + 
+				'{\\b ' + section.title.split('').map(char => {
+					const code = char.charCodeAt(0);
+					if (code < 128) {
+						if (char === '\\' || char === '{' || char === '}') {
+							return '\\' + char;
+						}
+						return char;
+					} else {
+						return '\\u' + code + '?';
+					}
+				}).join('') + '}\\b0\\par\n' + 
 				rtfParagraphs.join('\\par\n') + 
 				'\\par\n}';
 			
