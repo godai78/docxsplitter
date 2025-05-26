@@ -9,6 +9,7 @@ A web application that splits Microsoft Word (DOCX) files by headings and saves 
 - Automatic file naming based on headings
 - Works in any modern web browser
 - Generates valid RTF files with proper styling and formatting
+- Or switch to the `htmlout` branch and output simple HTML files)
 - Full Unicode support for all Latin-based scripts (Western, Eastern European, Nordic, Baltic, etc.)
 - Automatic codepage detection from source documents
 - Proper handling of diacritics and special characters
