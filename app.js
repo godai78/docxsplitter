@@ -132,20 +132,25 @@ document.addEventListener('DOMContentLoaded', () => {
 {\\fonttbl{\\f0\\fnil\\fcharset0 Arial;}}
 {\\colortbl ;\\red0\\green0\\blue0;}
 \\viewkind4\\uc1\\pard\\cf1\\f0\\fs24`;
-			
-			// First, split content into paragraphs
-			const paragraphs = section.content.split(/<\/?p>/).filter(p => p.trim());
-			
-			// Process each paragraph
-			let rtfParagraphs = paragraphs.map(p => {
-				// Remove any remaining HTML tags
-				let text = p.replace(/<[^>]*>/g, '');
-				
-				// Handle line breaks within paragraphs
-				text = text.replace(/<br\s*\/?>/gi, '\\line ');
-				
-				// Convert text to RTF format with proper Unicode handling
-				text = text.split('').map(char => {
+
+			// Parse the HTML content
+			const parser = new DOMParser();
+			const doc = parser.parseFromString(section.content, 'text/html');
+
+			// RTF formatting commands mapping
+			const rtfCommands = {
+				'b': { open: '\\b ', close: '\\b0 ' },
+				'strong': { open: '\\b ', close: '\\b0 ' },
+				'i': { open: '\\i ', close: '\\i0 ' },
+				'em': { open: '\\i ', close: '\\i0 ' },
+				'u': { open: '\\ul ', close: '\\ulnone ' },
+				'sup': { open: '\\super ', close: '\\nosupersub ' },
+				'sub': { open: '\\sub ', close: '\\nosupersub ' }
+			};
+
+			// Function to convert text to RTF format with proper Unicode handling
+			function convertToRtfText(text) {
+				return text.split('').map(char => {
 					const code = char.charCodeAt(0);
 					if (code < 128) {
 						// ASCII characters
@@ -158,25 +163,63 @@ document.addEventListener('DOMContentLoaded', () => {
 						return '\\u' + code + '?';
 					}
 				}).join('');
-				
-				return text.trim();
-			});
-			
-			// Create the RTF content with proper paragraph formatting and double line breaks
+			}
+
+			// Function to process a node and its children
+			function processNode(node, formattingStack = []) {
+				let rtfContent = '';
+
+				if (node.nodeType === Node.TEXT_NODE) {
+					// Apply current formatting stack and convert text
+					const text = node.textContent.trim();
+					if (text) {
+						rtfContent += formattingStack.join('') + convertToRtfText(text);
+					}
+				} else if (node.nodeType === Node.ELEMENT_NODE) {
+					const tagName = node.tagName.toLowerCase();
+					const rtfCommand = rtfCommands[tagName];
+
+					if (rtfCommand) {
+						// Handle formatting tags
+						formattingStack.push(rtfCommand.open);
+						// Process children with updated formatting stack
+						Array.from(node.childNodes).forEach(child => {
+							rtfContent += processNode(child, [...formattingStack]);
+						});
+						formattingStack.push(rtfCommand.close);
+					} else if (tagName === 'p') {
+						// Handle paragraphs
+						rtfContent += '\\par\n';
+						Array.from(node.childNodes).forEach(child => {
+							rtfContent += processNode(child, [...formattingStack]);
+						});
+						rtfContent += '\\par\n';
+					} else if (tagName === 'br') {
+						// Handle line breaks
+						rtfContent += '\\line\n';
+					} else {
+						// Process other elements
+						Array.from(node.childNodes).forEach(child => {
+							rtfContent += processNode(child, [...formattingStack]);
+						});
+					}
+				}
+
+				return rtfContent;
+			}
+
+			// Process the title
+			const titleRtf = '\\b ' + convertToRtfText(section.title) + '\\b0';
+
+			// Process the content
+			const contentRtf = processNode(doc.body);
+
+			// Create the final RTF content
 			const rtfContent = rtfHeader + 
 				'\\par\n\\par\n' + 
-				'{\\b ' + section.title.split('').map(char => {
-					const code = char.charCodeAt(0);
-					if (code < 128) {
-						if (char === '\\' || char === '{' || char === '}') {
-							return '\\' + char;
-						}
-						return char;
-					} else {
-						return '\\u' + code + '?';
-					}
-				}).join('') + '}\\b0\\par\n\\par\n' + 
-				rtfParagraphs.join('\\par\n\\par\n') + 
+				titleRtf + 
+				'\\par\n\\par\n' + 
+				contentRtf + 
 				'\\par\n\\par\n}';
 			
 			// Create a blob and save it
