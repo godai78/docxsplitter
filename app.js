@@ -47,7 +47,23 @@ document.addEventListener('DOMContentLoaded', () => {
 				try {
 					const arrayBuffer = event.target.result;
 					const result = await mammoth.convertToHtml({
-						arrayBuffer: arrayBuffer
+						arrayBuffer: arrayBuffer,
+						options: {
+							styleMap: [],
+							convertImage: mammoth.images.imgElement(() => {}),
+							ignoreEmptyParagraphs: false,
+							idPrefix: "",
+							transformDocument: mammoth.transforms.paragraph(element => {
+								// Extract codepage from the document if available
+								const codepage = element.styleId ? element.styleId.match(/cp(\d+)/) : null;
+								if (codepage) {
+									globalCodepage = codepage[1];
+								} else {
+									globalCodepage = "65001"; // Fallback to UTF-8 if no codepage found
+								}
+								return element;
+							})
+						}
 					});
 					resolve(result.value);
 				} catch (error) {
@@ -58,6 +74,9 @@ document.addEventListener('DOMContentLoaded', () => {
 			reader.readAsArrayBuffer(file);
 		});
 	}
+
+	// Global variable to store the codepage
+	let globalCodepage = "65001"; // Default to UTF-8
 
 	function splitByHeadings(html) {
 		const parser = new DOMParser();
@@ -108,10 +127,26 @@ document.addEventListener('DOMContentLoaded', () => {
 			const section = sections[i];
 			const filename = `${String(i + 1).padStart(2, '0')}_${sanitizeFilename(section.title)}.rtf`;
 			
-			// Create a simple RTF document template
-			const rtfHeader = '{\\rtf1\\ansi\\deff0\n{\\fonttbl{\\f0\\fnil\\fcharset0 Arial;}}\n{\\colortbl ;\\red0\\green0\\blue0;}\n\\viewkind4\\uc1\\pard\\cf1\\f0\\fs24\n';
+			// Create a more robust RTF document template with proper line breaks, encoding, and codepage
+			const rtfHeader = `{\\rtf1\\ansi\\ansicpg${globalCodepage}\\deff0\n{\\fonttbl{\\f0\\fnil\\fcharset0 Arial;}}\n{\\colortbl ;\\red0\\green0\\blue0;}\n\\viewkind4\\uc1\\pard\\cf1\\f0\\fs24\n`;
 			const rtfFooter = '\\par\n}';
-			const rtfContent = rtfHeader + '\\b ' + section.title + '\\b0\\par\n' + section.content.replace(/<[^>]*>/g, '') + rtfFooter;
+			
+			// Convert HTML content to plain text while preserving line breaks
+			let plainContent = section.content.replace(/<br\s*\/?>/gi, '\\line\n')
+				.replace(/<p>/gi, '')
+				.replace(/<\/p>/gi, '\\par\n')
+				.replace(/<[^>]*>/g, '');
+			
+			// Ensure proper RTF encoding (escape special characters and handle language-specific letters)
+			plainContent = plainContent.replace(/[\\{}]/g, '\\$&')
+				.replace(/[^\x00-\x7F]/g, function(char) {
+					return '\\u' + char.charCodeAt(0) + '?';
+				});
+			
+			// Treat \par markers as new paragraph markers
+			plainContent = plainContent.replace(/\\par/g, '\\par\n');
+			
+			const rtfContent = rtfHeader + '\\b ' + section.title + '\\b0\\par\n' + plainContent + rtfFooter;
 			
 			// Create a blob and save it
 			const blob = new Blob([rtfContent], { type: 'application/rtf' });
