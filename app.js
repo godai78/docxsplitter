@@ -162,9 +162,9 @@ document.addEventListener('DOMContentLoaded', () => {
 				return text.trim();
 			});
 			
-			// Create the RTF content with proper paragraph formatting
+			// Create the RTF content with proper paragraph formatting and double line breaks
 			const rtfContent = rtfHeader + 
-				'\\par\n' + 
+				'\\par\n\\par\n' + 
 				'{\\b ' + section.title.split('').map(char => {
 					const code = char.charCodeAt(0);
 					if (code < 128) {
@@ -175,9 +175,9 @@ document.addEventListener('DOMContentLoaded', () => {
 					} else {
 						return '\\u' + code + '?';
 					}
-				}).join('') + '}\\b0\\par\n' + 
-				rtfParagraphs.join('\\par\n') + 
-				'\\par\n}';
+				}).join('') + '}\\b0\\par\n\\par\n' + 
+				rtfParagraphs.join('\\par\n\\par\n') + 
+				'\\par\n\\par\n}';
 			
 			// Create a blob and save it
 			const blob = new Blob([rtfContent], { type: 'application/rtf' });
