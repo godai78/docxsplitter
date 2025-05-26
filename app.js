@@ -106,46 +106,26 @@ document.addEventListener('DOMContentLoaded', () => {
 	async function saveSectionsAsDocx(sections) {
 		for (let i = 0; i < sections.length; i++) {
 			const section = sections[i];
-			const filename = `${String(i + 1).padStart(2, '0')}_${sanitizeFilename(section.title)}.html`;
-			 
-			// Create a new HTML document
-			const docHtml = `
-			<!DOCTYPE html>
-			<html lang="en">
-			<head>
-				<meta charset="UTF-8">
-				<meta name="viewport" content="width=device-width, initial-scale=1.0">
-				<title>${section.title}</title>
-				<style>
-					body { font-family: Arial, sans-serif; line-height: 1.6; margin: 2rem; }
-					h1 { font-size: 2em; margin: 1.5em 0; }
-					h2 { font-size: 1.5em; margin: 1.2em 0; }
-					h3 { font-size: 1.2em; margin: 1em 0; }
-					h4 { font-size: 1em; margin: 0.8em 0; }
-					p { margin: 0.5em 0; }
-					div.content { margin: 1em 0; }
-				</style>
-			</head>
-			<body>
-				<h1>${section.title}</h1>
-				<div class="content">${section.content}</div>
-			</body>
-			</html>
-			`;
-
+			const filename = `${String(i + 1).padStart(2, '0')}_${sanitizeFilename(section.title)}.rtf`;
+			
+			// Create a simple RTF document template
+			const rtfHeader = '{\\rtf1\\ansi\\deff0\n{\\fonttbl{\\f0\\fnil\\fcharset0 Arial;}}\n{\\colortbl ;\\red0\\green0\\blue0;}\n\\viewkind4\\uc1\\pard\\cf1\\f0\\fs24\n';
+			const rtfFooter = '\\par\n}';
+			const rtfContent = rtfHeader + '\\b ' + section.title + '\\b0\\par\n' + section.content.replace(/<[^>]*>/g, '') + rtfFooter;
+			
 			// Create a blob and save it
-			const blob = new Blob([docHtml], { type: 'text/html' });
-			 
+			const blob = new Blob([rtfContent], { type: 'application/rtf' });
+			
 			// Add a small delay between downloads to avoid browser limits
 			await new Promise(resolve => setTimeout(resolve, 1000)); // 1 second delay
-			 
+			
 			// Create a temporary link to trigger download
 			const link = document.createElement('a');
 			link.href = URL.createObjectURL(blob);
 			link.download = filename;
 			document.body.appendChild(link);
 			link.click();
-			 
+			
 			// Clean up
 			URL.revokeObjectURL(link.href);
 			document.body.removeChild(link);
