@@ -62,6 +62,16 @@ A test version of the app based off the `master` branch runs at https://godai78.
 - Bold formatting for headings
 - UTF-8 encoding (codepage 65001) for full Unicode support
 - Clean RTF structure with proper control words and grouping
+- Comprehensive text formatting support:
+  - Bold text (`<b>` and `<strong>` tags)
+  - Italic text (`<i>` and `<em>` tags)
+  - Underlined text (`<u>` tags)
+  - Superscript text (`<sup>` tags)
+  - Subscript text (`<sub>` tags)
+  - Nested formatting (e.g., bold text within italic text)
+- Proper handling of formatting hierarchy and nesting
+- Consistent formatting state management across paragraphs
+- Automatic formatting command closure to prevent formatting leaks
 
 ### Character Support
 - Automatic detection of document codepage
