@@ -171,22 +171,51 @@ document.addEventListener('DOMContentLoaded', () => {
 
 				if (node.nodeType === Node.TEXT_NODE) {
 					// Apply current formatting stack and convert text
-					const text = node.textContent.trim();
+					const text = node.textContent;
 					if (text) {
-						rtfContent += formattingStack.join('') + convertToRtfText(text);
+						// Preserve leading and trailing spaces
+						const leadingSpace = text.match(/^\s*/)[0];
+						const trailingSpace = text.match(/\s*$/)[0];
+						const trimmedText = text.trim();
+						
+						if (trimmedText) {
+							// Add leading space if exists
+							if (leadingSpace) {
+								rtfContent += convertToRtfText(leadingSpace);
+							}
+							
+							// Wrap text in formatting groups if there are active formats
+							if (formattingStack.length > 0) {
+								rtfContent += '{' + formattingStack.join('') + convertToRtfText(trimmedText) + '}';
+							} else {
+								rtfContent += convertToRtfText(trimmedText);
+							}
+							
+							// Add trailing space if exists
+							if (trailingSpace) {
+								rtfContent += convertToRtfText(trailingSpace);
+							}
+						} else {
+							// If text is only whitespace, preserve it
+							rtfContent += convertToRtfText(text);
+						}
 					}
 				} else if (node.nodeType === Node.ELEMENT_NODE) {
 					const tagName = node.tagName.toLowerCase();
 					const rtfCommand = rtfCommands[tagName];
 
 					if (rtfCommand) {
-						// Handle formatting tags
-						formattingStack.push(rtfCommand.open);
+						// Handle formatting tags with proper grouping
+						const newFormattingStack = [...formattingStack, rtfCommand.open];
+						let childContent = '';
+						
 						// Process children with updated formatting stack
 						Array.from(node.childNodes).forEach(child => {
-							rtfContent += processNode(child, [...formattingStack]);
+							childContent += processNode(child, newFormattingStack);
 						});
-						formattingStack.push(rtfCommand.close);
+						
+						// Wrap the formatted content in a group with proper closure
+						rtfContent += '{' + childContent + rtfCommand.close + '}';
 					} else if (tagName === 'p') {
 						// Handle paragraphs
 						rtfContent += '\\par\n';
@@ -208,8 +237,8 @@ document.addEventListener('DOMContentLoaded', () => {
 				return rtfContent;
 			}
 
-			// Process the title
-			const titleRtf = '\\b ' + convertToRtfText(section.title) + '\\b0';
+			// Process the title with proper formatting
+			const titleRtf = '{' + '\\b ' + convertToRtfText(section.title) + '\\b0' + '}';
 
 			// Process the content
 			const contentRtf = processNode(doc.body);
