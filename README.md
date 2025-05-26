@@ -29,20 +29,20 @@ node server.js
 
 ### Web Server Deployment
 1. Upload the following files to your web server:
-   - `index.html`
-   - `app.js`
-   - `styles.css`
-   - `server.js`
-   - `package.json`
-   - `package-lock.json`
-   - `LICENSE`
-   - `README.md`
-   - `pepeagent.gif`
+	- `index.html`
+	- `app.js`
+	- `styles.css`
+	- `server.js`
+	- `package.json`
+	- `package-lock.json`
+	- `LICENSE`
+	- `README.md`
+	- `pepeagent.gif`
 
 2. Ensure your web server:
-   - Serves static files
-   - Has Node.js installed
-   - Allows file downloads
+	- Serves static files
+	- Has Node.js installed
+	- Allows file downloads
 
 3. Access the application through your web server's URL
 

@@ -1,16 +1,16 @@
 {
-  "name": "docx-splitter",
-  "version": "1.0.0",
-  "description": "Web application to split DOCX files by headings",
-  "main": "index.js",
-  "scripts": {
-    "start": "http-server -p 3000"
-  },
-  "dependencies": {
-    "mammoth": "^1.5.0",
-    "file-saver": "^2.0.5"
-  },
-  "devDependencies": {
-    "http-server": "^14.1.1"
-  }
+	"name": "docx-splitter",
+	"version": "1.0.0",
+	"description": "Web application to split DOCX files by headings",
+	"main": "index.js",
+	"scripts": {
+		"start": "http-server -p 3000"
+	},
+	"dependencies": {
+		"mammoth": "^1.5.0",
+		"file-saver": "^2.0.5"
+	},
+	"devDependencies": {
+		"http-server": "^14.1.1"
+	}
 }

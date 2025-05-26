@@ -153,64 +153,64 @@ document.addEventListener('DOMContentLoaded', () => {
 	}
 
 	function sanitizeFilename(filename) {
-        // Replace common diacritics with their base letters
-        const diacritics = {
-            // Polish
-            'ą': 'a', 'ć': 'c', 'ę': 'e', 'ł': 'l', 'ń': 'n', 'ó': 'o', 'ś': 's', 'ź': 'z', 'ż': 'z',
-            // German
-            'ä': 'a', 'ö': 'o', 'ü': 'u', 'ß': 'ss',
-            // French
-            'à': 'a', 'â': 'a', 'ã': 'a', 'á': 'a', 'ä': 'a', 'å': 'a',
-            'ç': 'c',
-            'è': 'e', 'é': 'e', 'ê': 'e', 'ë': 'e',
-            'ì': 'i', 'í': 'i', 'î': 'i', 'ï': 'i',
-            'ñ': 'n',
-            'ò': 'o', 'ó': 'o', 'ô': 'o', 'ö': 'o', 'õ': 'o',
-            'ù': 'u', 'ú': 'u', 'û': 'u', 'ü': 'u',
-            'ý': 'y',
-            // Spanish
-            'á': 'a', 'é': 'e', 'í': 'i', 'ó': 'o', 'ú': 'u',
-            // Czech
-            'č': 'c', 'ď': 'd', 'ě': 'e', 'ř': 'r', 'š': 's', 'ť': 't', 'ů': 'u', 'ž': 'z',
-            // Hungarian
-            'á': 'a', 'é': 'e', 'í': 'i', 'ó': 'o', 'ő': 'o', 'ú': 'u', 'ű': 'u',
-            // Turkish
-            'ç': 'c', 'ğ': 'g', 'ı': 'i', 'ö': 'o', 'ş': 's', 'ü': 'u',
-            // Greek
-            'α': 'a', 'β': 'b', 'γ': 'g', 'δ': 'd', 'ε': 'e', 'ζ': 'z', 'η': 'e',
-            'θ': 'th', 'ι': 'i', 'κ': 'k', 'λ': 'l', 'μ': 'm', 'ν': 'n', 'ξ': 'x',
-            'ο': 'o', 'π': 'p', 'ρ': 'r', 'σ': 's', 'τ': 't', 'υ': 'y', 'φ': 'f',
-            'χ': 'ch', 'ψ': 'ps', 'ω': 'o',
-            // Russian
-            'а': 'a', 'б': 'b', 'в': 'v', 'г': 'g', 'д': 'd', 'е': 'e', 'ё': 'yo',
-            'ж': 'zh', 'з': 'z', 'и': 'i', 'й': 'y', 'к': 'k', 'л': 'l', 'м': 'm',
-            'н': 'n', 'о': 'o', 'п': 'p', 'р': 'r', 'с': 's', 'т': 't', 'у': 'u',
-            'ф': 'f', 'х': 'h', 'ц': 'c', 'ч': 'ch', 'ш': 'sh', 'щ': 'shch',
-            'ъ': '', 'ы': 'y', 'ь': '', 'э': 'e', 'ю': 'yu', 'я': 'ya',
-            // Hebrew
-            'א': 'a', 'ב': 'b', 'ג': 'g', 'ד': 'd', 'ה': 'h', 'ו': 'v', 'ז': 'z',
-            'ח': 'kh', 'ט': 't', 'י': 'y', 'כ': 'k', 'ל': 'l', 'מ': 'm', 'נ': 'n',
-            'ס': 's', 'ע': 'a', 'פ': 'p', 'צ': 'ts', 'ק': 'k', 'ר': 'r', 'ש': 'sh',
-            'ת': 't',
-            // Arabic
-            'ا': 'a', 'ب': 'b', 'ت': 't', 'ث': 'th', 'ج': 'j', 'ح': 'h', 'خ': 'kh',
-            'د': 'd', 'ذ': 'dh', 'ر': 'r', 'ز': 'z', 'س': 's', 'ش': 'sh', 'ص': 's',
-            'ض': 'd', 'ط': 't', 'ظ': 'z', 'ع': 'a', 'غ': 'gh', 'ف': 'f', 'ق': 'q',
-            'ك': 'k', 'ل': 'l', 'م': 'm', 'ن': 'n', 'ه': 'h', 'و': 'w', 'ي': 'y'
-        };
+		// Replace common diacritics with their base letters
+		const diacritics = {
+			// Polish
+			'ą': 'a', 'ć': 'c', 'ę': 'e', 'ł': 'l', 'ń': 'n', 'ó': 'o', 'ś': 's', 'ź': 'z', 'ż': 'z',
+			// German
+			'ä': 'a', 'ö': 'o', 'ü': 'u', 'ß': 'ss',
+			// French
+			'à': 'a', 'â': 'a', 'ã': 'a', 'á': 'a', 'ä': 'a', 'å': 'a',
+			'ç': 'c',
+			'è': 'e', 'é': 'e', 'ê': 'e', 'ë': 'e',
+			'ì': 'i', 'í': 'i', 'î': 'i', 'ï': 'i',
+			'ñ': 'n',
+			'ò': 'o', 'ó': 'o', 'ô': 'o', 'ö': 'o', 'õ': 'o',
+			'ù': 'u', 'ú': 'u', 'û': 'u', 'ü': 'u',
+			'ý': 'y',
+			// Spanish
+			'á': 'a', 'é': 'e', 'í': 'i', 'ó': 'o', 'ú': 'u',
+			// Czech
+			'č': 'c', 'ď': 'd', 'ě': 'e', 'ř': 'r', 'š': 's', 'ť': 't', 'ů': 'u', 'ž': 'z',
+			// Hungarian
+			'á': 'a', 'é': 'e', 'í': 'i', 'ó': 'o', 'ő': 'o', 'ú': 'u', 'ű': 'u',
+			// Turkish
+			'ç': 'c', 'ğ': 'g', 'ı': 'i', 'ö': 'o', 'ş': 's', 'ü': 'u',
+			// Greek
+			'α': 'a', 'β': 'b', 'γ': 'g', 'δ': 'd', 'ε': 'e', 'ζ': 'z', 'η': 'e',
+			'θ': 'th', 'ι': 'i', 'κ': 'k', 'λ': 'l', 'μ': 'm', 'ν': 'n', 'ξ': 'x',
+			'ο': 'o', 'π': 'p', 'ρ': 'r', 'σ': 's', 'τ': 't', 'υ': 'y', 'φ': 'f',
+			'χ': 'ch', 'ψ': 'ps', 'ω': 'o',
+			// Russian
+			'а': 'a', 'б': 'b', 'в': 'v', 'г': 'g', 'д': 'd', 'е': 'e', 'ё': 'yo',
+			'ж': 'zh', 'з': 'z', 'и': 'i', 'й': 'y', 'к': 'k', 'л': 'l', 'м': 'm',
+			'н': 'n', 'о': 'o', 'п': 'p', 'р': 'r', 'с': 's', 'т': 't', 'у': 'u',
+			'ф': 'f', 'х': 'h', 'ц': 'c', 'ч': 'ch', 'ш': 'sh', 'щ': 'shch',
+			'ъ': '', 'ы': 'y', 'ь': '', 'э': 'e', 'ю': 'yu', 'я': 'ya',
+			// Hebrew
+			'א': 'a', 'ב': 'b', 'ג': 'g', 'ד': 'd', 'ה': 'h', 'ו': 'v', 'ז': 'z',
+			'ח': 'kh', 'ט': 't', 'י': 'y', 'כ': 'k', 'ל': 'l', 'מ': 'm', 'נ': 'n',
+			'ס': 's', 'ע': 'a', 'פ': 'p', 'צ': 'ts', 'ק': 'k', 'ר': 'r', 'ש': 'sh',
+			'ת': 't',
+			// Arabic
+			'ا': 'a', 'ب': 'b', 'ت': 't', 'ث': 'th', 'ج': 'j', 'ح': 'h', 'خ': 'kh',
+			'د': 'd', 'ذ': 'dh', 'ر': 'r', 'ز': 'z', 'س': 's', 'ش': 'sh', 'ص': 's',
+			'ض': 'd', 'ط': 't', 'ظ': 'z', 'ع': 'a', 'غ': 'gh', 'ف': 'f', 'ق': 'q',
+			'ك': 'k', 'ل': 'l', 'م': 'm', 'ن': 'n', 'ه': 'h', 'و': 'w', 'ي': 'y'
+		};
 
-        // Replace diacritics and special characters
-        let sanitized = filename.toLowerCase();
-        for (const [char, replacement] of Object.entries(diacritics)) {
-            sanitized = sanitized.split(char).join(replacement);
-        }
+		// Replace diacritics and special characters
+		let sanitized = filename.toLowerCase();
+		for (const [char, replacement] of Object.entries(diacritics)) {
+			sanitized = sanitized.split(char).join(replacement);
+		}
 
-        // Replace remaining special characters with underscores
-        sanitized = sanitized
-            .replace(/[^a-z0-9]/g, '_')
-            .replace(/_+/g, '_')
-            .replace(/^_+|_+$/g, '');
+		// Replace remaining special characters with underscores
+		sanitized = sanitized
+			.replace(/[^a-z0-9]/g, '_')
+			.replace(/_+/g, '_')
+			.replace(/^_+|_+$/g, '');
 
-        return sanitized;
-    }
+		return sanitized;
+	}
 });
