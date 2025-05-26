@@ -47,7 +47,23 @@ document.addEventListener('DOMContentLoaded', () => {
 				try {
 					const arrayBuffer = event.target.result;
 					const result = await mammoth.convertToHtml({
-						arrayBuffer: arrayBuffer
+						arrayBuffer: arrayBuffer,
+						options: {
+							styleMap: [],
+							convertImage: mammoth.images.imgElement(() => {}),
+							ignoreEmptyParagraphs: false,
+							idPrefix: "",
+							transformDocument: mammoth.transforms.paragraph(element => {
+								// Extract codepage from the document if available
+								const codepage = element.styleId ? element.styleId.match(/cp(\d+)/) : null;
+								if (codepage) {
+									globalCodepage = codepage[1];
+								} else {
+									globalCodepage = "65001"; // Fallback to UTF-8 if no codepage found
+								}
+								return element;
+							})
+						}
 					});
 					resolve(result.value);
 				} catch (error) {
@@ -58,6 +74,9 @@ document.addEventListener('DOMContentLoaded', () => {
 			reader.readAsArrayBuffer(file);
 		});
 	}
+
+	// Global variable to store the codepage
+	let globalCodepage = "65001"; // Default to UTF-8
 
 	function splitByHeadings(html) {
 		const parser = new DOMParser();
@@ -106,46 +125,73 @@ document.addEventListener('DOMContentLoaded', () => {
 	async function saveSectionsAsDocx(sections) {
 		for (let i = 0; i < sections.length; i++) {
 			const section = sections[i];
-			const filename = `${String(i + 1).padStart(2, '0')}_${sanitizeFilename(section.title)}.html`;
-			 
-			// Create a new HTML document
-			const docHtml = `
-			<!DOCTYPE html>
-			<html lang="en">
-			<head>
-				<meta charset="UTF-8">
-				<meta name="viewport" content="width=device-width, initial-scale=1.0">
-				<title>${section.title}</title>
-				<style>
-					body { font-family: Arial, sans-serif; line-height: 1.6; margin: 2rem; }
-					h1 { font-size: 2em; margin: 1.5em 0; }
-					h2 { font-size: 1.5em; margin: 1.2em 0; }
-					h3 { font-size: 1.2em; margin: 1em 0; }
-					h4 { font-size: 1em; margin: 0.8em 0; }
-					p { margin: 0.5em 0; }
-					div.content { margin: 1em 0; }
-				</style>
-			</head>
-			<body>
-				<h1>${section.title}</h1>
-				<div class="content">${section.content}</div>
-			</body>
-			</html>
-			`;
-
+			const filename = `${String(i + 1).padStart(2, '0')}_${sanitizeFilename(section.title)}.rtf`;
+			
+			// Create RTF header with proper Unicode support
+			const rtfHeader = `{\\rtf1\\ansi\\ansicpg65001\\deff0\\deflang1033
+{\\fonttbl{\\f0\\fnil\\fcharset0 Arial;}}
+{\\colortbl ;\\red0\\green0\\blue0;}
+\\viewkind4\\uc1\\pard\\cf1\\f0\\fs24`;
+			
+			// First, split content into paragraphs
+			const paragraphs = section.content.split(/<\/?p>/).filter(p => p.trim());
+			
+			// Process each paragraph
+			let rtfParagraphs = paragraphs.map(p => {
+				// Remove any remaining HTML tags
+				let text = p.replace(/<[^>]*>/g, '');
+				
+				// Handle line breaks within paragraphs
+				text = text.replace(/<br\s*\/?>/gi, '\\line ');
+				
+				// Convert text to RTF format with proper Unicode handling
+				text = text.split('').map(char => {
+					const code = char.charCodeAt(0);
+					if (code < 128) {
+						// ASCII characters
+						if (char === '\\' || char === '{' || char === '}') {
+							return '\\' + char;
+						}
+						return char;
+					} else {
+						// Unicode characters - use \uN? format
+						return '\\u' + code + '?';
+					}
+				}).join('');
+				
+				return text.trim();
+			});
+			
+			// Create the RTF content with proper paragraph formatting and double line breaks
+			const rtfContent = rtfHeader + 
+				'\\par\n\\par\n' + 
+				'{\\b ' + section.title.split('').map(char => {
+					const code = char.charCodeAt(0);
+					if (code < 128) {
+						if (char === '\\' || char === '{' || char === '}') {
+							return '\\' + char;
+						}
+						return char;
+					} else {
+						return '\\u' + code + '?';
+					}
+				}).join('') + '}\\b0\\par\n\\par\n' + 
+				rtfParagraphs.join('\\par\n\\par\n') + 
+				'\\par\n\\par\n}';
+			
 			// Create a blob and save it
-			const blob = new Blob([docHtml], { type: 'text/html' });
-			 
+			const blob = new Blob([rtfContent], { type: 'application/rtf' });
+			
 			// Add a small delay between downloads to avoid browser limits
 			await new Promise(resolve => setTimeout(resolve, 1000)); // 1 second delay
-			 
+			
 			// Create a temporary link to trigger download
 			const link = document.createElement('a');
 			link.href = URL.createObjectURL(blob);
 			link.download = filename;
 			document.body.appendChild(link);
 			link.click();
-			 
+			
 			// Clean up
 			URL.revokeObjectURL(link.href);
 			document.body.removeChild(link);

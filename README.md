@@ -1,6 +1,6 @@
 # DOCX Splitter
 
-A web application that splits Microsoft Word (DOCX) files by headings and saves them as separate HTML files.
+A web application that splits Microsoft Word (DOCX) files by headings and saves them as separate RTF files with proper formatting and character encoding.
 
 ## Features
 
@@ -8,9 +8,12 @@ A web application that splits Microsoft Word (DOCX) files by headings and saves 
 - Clean and modern web interface
 - Automatic file naming based on headings
 - Works in any modern web browser
-- Generates valid HTML files with proper styling (see the `rtfoutput` branch for `rtf` generator)
-- Supports multiple language character sets in filenames
+- Generates valid RTF files with proper styling and formatting
+- Full Unicode support for all Latin-based scripts (Western, Eastern European, Nordic, Baltic, etc.)
+- Automatic codepage detection from source documents
+- Proper handling of diacritics and special characters
 - Built-in Node.js server for easy deployment
+- Smart delay between downloads to avoid browser limits
 
 ## Usage
 
@@ -45,6 +48,39 @@ node server.js
 	- Allows file downloads
 
 3. Access the application through your web server's URL
+
+## Features in Detail
+
+### RTF Generation
+- Proper paragraph formatting with double line breaks (`\par\par`)
+- Line breaks within paragraphs using `\line`
+- Bold formatting for headings
+- UTF-8 encoding (codepage 65001) for full Unicode support
+- Clean RTF structure with proper control words and grouping
+
+### Character Support
+- Automatic detection of document codepage
+- Fallback to UTF-8 if no codepage is specified
+- Proper handling of all Latin-based scripts:
+  - Western European (French, German, Spanish, etc.)
+  - Eastern European (Polish, Czech, Hungarian, etc.)
+  - Nordic (Swedish, Danish, Norwegian)
+  - Baltic (Latvian, Lithuanian)
+  - Turkish
+  - Romanian
+- Proper escaping of RTF special characters
+
+### File Naming
+- Automatic sanitization of filenames
+- Support for diacritics in filenames
+- Sequential numbering of output files
+- Safe character replacement for special characters
+
+### Browser Compatibility
+- Smart delay between downloads to prevent browser limits
+- Proper MIME type handling for RTF files
+- Clean file download mechanism
+- Progress indication during processing
 
 ## Dependencies
 
