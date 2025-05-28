@@ -12,6 +12,14 @@
 			<h3>Input docx and split every header into a new rtf file</h3>
 			<div class="upload-section">
 				<input type="file" id="docxFile" accept=".docx" />
+				<select id="headingLevel" class="heading-select" title="Split at this level and all levels above it">
+					<option value="1" selected>Split at H1 only</option>
+					<option value="2">Split at H1 and H2</option>
+					<option value="3">Split at H1, H2, and H3</option>
+					<option value="4">Split at H1, H2, H3, and H4</option>
+					<option value="5">Split at H1, H2, H3, H4, and H5</option>
+					<option value="6">Split at all heading levels</option>
+				</select>
 				<button id="splitButton">Split Document</button>
 			</div>
 			<div id="status" class="status"></div>

@@ -4,17 +4,17 @@ A web application that splits Microsoft Word (DOCX) files by headings and saves 
 
 ## Features
 
-- Split DOCX files by headings (H1-H6).
-- Clean and modern web interface.
-- Automatic file naming based on headings.
-- Works in any modern web browser.
-- Generates valid RTF files with proper styling and formatting.
-	- (You can switch to the `htmlout` branch and output simple HTML files).
-- Full Unicode support for all Latin-based scripts (Western, Eastern European, Nordic, Baltic, etc.).
-- Automatic codepage detection from source documents.
-- Proper handling of diacritics and special characters.
-- Built-in Node.js server for easy deployment.
-- Smart delay between downloads to avoid browser limits.
+- Split DOCX files by headings (H1-H6)
+- Select which heading level to split at (splits at selected level and all levels above it)
+- Clean and modern web interface
+- Automatic file naming based on headings
+- Works in any modern web browser
+- Generates valid RTF files with proper styling and formatting
+- Full Unicode support for all Latin-based scripts (Western, Eastern European, Nordic, Baltic, etc.)
+- Automatic codepage detection from source documents
+- Proper handling of diacritics and special characters
+- Built-in Node.js server for easy deployment
+- Smart delay between downloads to avoid browser limits
 
 ## Usage
 

@@ -3,6 +3,7 @@ document.addEventListener('DOMContentLoaded', () => {
 	const splitButton = document.getElementById('splitButton');
 	const status = document.getElementById('status');
 	const output = document.getElementById('output');
+	const headingLevel = document.getElementById('headingLevel');
 
 	splitButton.addEventListener('click', async () => {
 		const file = docxFile.files[0];
@@ -14,7 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
 		try {
 			setStatus('Processing document...', 'info');
 			const content = await processDocx(file);
-			const sections = splitByHeadings(content);
+			const sections = splitByHeadings(content, parseInt(headingLevel.value));
 			 
 			setStatus('Saving files...', 'info');
 			await saveSectionsAsDocx(sections);
@@ -78,7 +79,7 @@ document.addEventListener('DOMContentLoaded', () => {
 	// Global variable to store the codepage
 	let globalCodepage = "65001"; // Default to UTF-8
 
-	function splitByHeadings(html) {
+	function splitByHeadings(html, targetLevel) {
 		const parser = new DOMParser();
 		const doc = parser.parseFromString(html, 'text/html');
 		const sections = [];
@@ -90,7 +91,8 @@ document.addEventListener('DOMContentLoaded', () => {
 		elements.forEach(element => {
 			if (element.nodeType === Node.ELEMENT_NODE) {
 				const headingLevel = getHeadingLevel(element);
-				if (headingLevel) {
+				// Split at the target level and all levels above it (lower numbers)
+				if (headingLevel && headingLevel <= targetLevel) {
 					// Start new section
 					if (currentSection) {
 						sections.push(currentSection);
