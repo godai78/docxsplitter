@@ -2,10 +2,15 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.4] - 2025-05-29
+
+### Added
+- Footer with links
+
 ## [0.3] - 2025-05-28
 
 ### Added
-- Heading level selector to control which heading levels to split a
+- Heading level selector to control which heading levels to split a file by
 
 ## [0.2] - 2025-05-26
 
