@@ -8,19 +8,26 @@ document.addEventListener('DOMContentLoaded', () => {
 	splitButton.addEventListener('click', async () => {
 		const file = docxFile.files[0];
 		if (!file) {
-			setStatus('Please select a DOCX file first', 'error');
+			setStatus('Please select a file first', 'error');
 			return;
 		}
 
-		// Check if the file is a DOCX file
-		if (!file.name.toLowerCase().endsWith('.docx')) {
-			setStatus('Unsupported file format', 'error');
+		// Check if the file is a supported format
+		const fileExtension = file.name.toLowerCase().split('.').pop();
+		if (!['docx', 'rtf'].includes(fileExtension)) {
+			setStatus('Unsupported file format. Please use DOCX or RTF files.', 'error');
 			return;
 		}
 
 		try {
 			setStatus('Processing document...', 'info');
-			const content = await processDocx(file);
+			let content;
+			
+			if (fileExtension === 'docx') {
+				content = await processDocx(file);
+			} else {
+				content = await processRtf(file);
+			}
 			
 			// Check if there are headers of the selected level
 			if (!hasHeadersOfLevel(content, parseInt(headingLevel.value))) {
@@ -89,6 +96,94 @@ document.addEventListener('DOMContentLoaded', () => {
 		});
 	}
 
+	async function processRtf(file) {
+		const reader = new FileReader();
+		return new Promise((resolve, reject) => {
+			reader.onload = async (event) => {
+				try {
+					const rtfContent = event.target.result;
+					console.log('=== RTF Processing Debug ===');
+					
+					// Skip the RTF header and font table to get to the actual content
+					const contentStart = rtfContent.indexOf('\\viewkind');
+					if (contentStart === -1) {
+						throw new Error('Could not find document content in RTF file');
+					}
+					
+					const documentContent = rtfContent.substring(contentStart);
+					console.log('Document content (first 2000 chars):', documentContent.substring(0, 2000));
+					
+					// First, let's find all paragraphs
+					const paragraphs = documentContent.split('\\par');
+					console.log('Found paragraphs:', paragraphs.length);
+					
+					let processedContent = '';
+					let headerCount = 0;
+					
+					// Process each paragraph
+					paragraphs.forEach(paragraph => {
+						// Skip empty paragraphs
+						if (!paragraph.trim()) return;
+						
+						// Check if this paragraph has header-like formatting
+						const hasBold = paragraph.includes('\\b');
+						const hasFontSize = paragraph.match(/\\fs(\d+)/);
+						const fontSize = hasFontSize ? parseInt(hasFontSize[1]) : 0;
+						
+						// Extract the actual text
+						const text = paragraph
+							.replace(/\\[a-z0-9]+\s?/g, '')
+							.replace(/{|}/g, '')
+							.trim();
+						
+						if (!text) return;
+						
+						console.log('Processing paragraph:', {
+							text: text.substring(0, 50),
+							hasBold,
+							fontSize,
+							original: paragraph.substring(0, 100)
+						});
+						
+						// Determine if this is a header based on formatting
+						if (hasBold || fontSize >= 20) {
+							// Determine heading level based on font size
+							let level = 1;
+							if (fontSize >= 40) level = 1;
+							else if (fontSize >= 32) level = 2;
+							else if (fontSize >= 28) level = 3;
+							else if (fontSize >= 24) level = 4;
+							else if (fontSize >= 20) level = 5;
+							else level = 6;
+							
+							console.log('Found header:', {
+								text,
+								level,
+								fontSize
+							});
+							
+							processedContent += `<h${level}>${text}</h${level}>\n`;
+							headerCount++;
+						} else {
+							processedContent += `<p>${text}</p>\n`;
+						}
+					});
+					
+					console.log('Total headers found:', headerCount);
+					console.log('Final HTML content:', processedContent);
+					console.log('=== End RTF Processing Debug ===');
+					
+					resolve(processedContent);
+				} catch (error) {
+					console.error('Error processing RTF:', error);
+					reject(error);
+				}
+			};
+			reader.onerror = (error) => reject(error);
+			reader.readAsText(file);
+		});
+	}
+
 	// Global variable to store the codepage
 	let globalCodepage = "65001"; // Default to UTF-8
 
@@ -138,17 +233,31 @@ document.addEventListener('DOMContentLoaded', () => {
 	}
 
 	function hasHeadersOfLevel(html, targetLevel) {
+		console.log('=== Header Level Check Debug ===');
+		console.log('Target level:', targetLevel);
+		console.log('HTML content:', html);
+		
 		const parser = new DOMParser();
 		const doc = parser.parseFromString(html, 'text/html');
 		const elements = Array.from(doc.body.childNodes);
 		
-		return elements.some(element => {
+		console.log('Document elements:', elements.map(el => ({
+			tagName: el.tagName,
+			textContent: el.textContent?.substring(0, 50)
+		})));
+		
+		const hasHeaders = elements.some(element => {
 			if (element.nodeType === Node.ELEMENT_NODE) {
 				const headingLevel = getHeadingLevel(element);
+				console.log('Element:', element.tagName, 'Level:', headingLevel, 'Text:', element.textContent?.substring(0, 50));
 				return headingLevel && headingLevel <= targetLevel;
 			}
 			return false;
 		});
+		
+		console.log('Has headers:', hasHeaders);
+		console.log('=== End Header Level Check Debug ===');
+		return hasHeaders;
 	}
 
 	async function saveSectionsAsDocx(sections) {

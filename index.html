@@ -11,7 +11,7 @@
 			<h1>DOCX Splitter</h1>
 			<h3>Input docx and split every header into a new rtf file</h3>
 			<div class="upload-section">
-				<input type="file" id="docxFile" accept=".docx" />
+				<input type="file" id="docxFile" accept=".docx,.rtf" />
 				<select id="headingLevel" class="heading-select" title="Split at this level and all levels above it">
 					<option value="1" selected>Split at H1 only</option>
 					<option value="2">Split at H1 and H2</option>
@@ -30,6 +30,7 @@
 		</div>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.5.0/mammoth.browser.min.js"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/rtf-parser@1.0.0/dist/rtf-parser.min.js"></script>
 		<script src="app.js"></script>
 	</body>
 </html>
