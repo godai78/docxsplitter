@@ -1,4 +1,4 @@
-# DOCX Splitter v 0.4
+# DOCX Splitter v 0.5
 
 A web application that splits Microsoft Word `.docx` files by selected heading level and saves them as separate `.rtf` files.
 
