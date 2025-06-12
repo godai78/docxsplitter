@@ -101,7 +101,29 @@ document.addEventListener('DOMContentLoaded', () => {
 		return new Promise((resolve, reject) => {
 			reader.onload = async (event) => {
 				try {
-					const rtfContent = event.target.result;
+					// Read as ArrayBuffer to preserve encoding
+					const arrayBuffer = event.target.result;
+					
+					// First read the header to detect codepage
+					const headerView = new Uint8Array(arrayBuffer.slice(0, 1000));
+					const headerText = new TextDecoder('latin1').decode(headerView);
+					
+					// Look for codepage declaration in RTF header
+					const codepageMatch = headerText.match(/\\ansicpg(\d+)/);
+					if (!codepageMatch) {
+						throw new Error('Could not detect codepage in RTF file');
+					}
+					
+					const codepage = codepageMatch[1];
+					console.log('Detected codepage from RTF:', codepage);
+					
+					// Set the global codepage for consistent encoding handling
+					globalCodepage = codepage;
+					
+					// Read the entire file using the detected codepage
+					const decoder = new TextDecoder(`windows-${codepage}`);
+					const rtfContent = decoder.decode(arrayBuffer);
+					
 					console.log('=== RTF Processing Debug ===');
 					
 					// Skip the RTF header and font table to get to the actual content
@@ -130,11 +152,19 @@ document.addEventListener('DOMContentLoaded', () => {
 						const hasFontSize = paragraph.match(/\\fs(\d+)/);
 						const fontSize = hasFontSize ? parseInt(hasFontSize[1]) : 0;
 						
-						// Extract the actual text
-						const text = paragraph
+						// Extract the actual text, properly handling Unicode
+						let text = paragraph
 							.replace(/\\[a-z0-9]+\s?/g, '')
 							.replace(/{|}/g, '')
 							.trim();
+						
+						// Convert hex escape sequences to their proper characters
+						text = text.replace(/\\'([0-9a-f]{2})/gi, (match, hex) => {
+							const code = parseInt(hex, 16);
+							// Convert from Windows codepage to Unicode
+							const buffer = new Uint8Array([code]);
+							return new TextDecoder(`windows-${codepage}`).decode(buffer);
+						});
 						
 						if (!text) return;
 						
@@ -180,7 +210,7 @@ document.addEventListener('DOMContentLoaded', () => {
 				}
 			};
 			reader.onerror = (error) => reject(error);
-			reader.readAsText(file);
+			reader.readAsArrayBuffer(file);
 		});
 	}
 
@@ -205,8 +235,14 @@ document.addEventListener('DOMContentLoaded', () => {
 					if (currentSection) {
 						sections.push(currentSection);
 					}
+					
+					// Get the text content and remove any RTF artifacts
+					const title = element.textContent
+						.replace(/^[^a-zA-Z]*/, '')  // Remove everything before first letter
+						.trim();
+					
 					currentSection = {
-						title: element.textContent,
+						title: title,
 						content: ''
 					};
 				} else if (currentSection) {
