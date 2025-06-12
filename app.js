@@ -12,9 +12,22 @@ document.addEventListener('DOMContentLoaded', () => {
 			return;
 		}
 
+		// Check if the file is a DOCX file
+		if (!file.name.toLowerCase().endsWith('.docx')) {
+			setStatus('Unsupported file format', 'error');
+			return;
+		}
+
 		try {
 			setStatus('Processing document...', 'info');
 			const content = await processDocx(file);
+			
+			// Check if there are headers of the selected level
+			if (!hasHeadersOfLevel(content, parseInt(headingLevel.value))) {
+				setStatus('No headers of the selected size present in the document', 'error');
+				return;
+			}
+			
 			const sections = splitByHeadings(content, parseInt(headingLevel.value));
 			 
 			setStatus('Saving files...', 'info');
@@ -122,6 +135,20 @@ document.addEventListener('DOMContentLoaded', () => {
 			return (level >= 1 && level <= 6) ? level : null;
 		}
 		return null;
+	}
+
+	function hasHeadersOfLevel(html, targetLevel) {
+		const parser = new DOMParser();
+		const doc = parser.parseFromString(html, 'text/html');
+		const elements = Array.from(doc.body.childNodes);
+		
+		return elements.some(element => {
+			if (element.nodeType === Node.ELEMENT_NODE) {
+				const headingLevel = getHeadingLevel(element);
+				return headingLevel && headingLevel <= targetLevel;
+			}
+			return false;
+		});
 	}
 
 	async function saveSectionsAsDocx(sections) {

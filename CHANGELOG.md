@@ -2,22 +2,20 @@
 
 All notable changes to this project will be documented in this file.
 
-## [0.4] - 2025-05-29
+## [0.5] - 2025-06-11
+### Added
+- Error messages (for wrong file format and missing headers levels)
 
+## [0.4] - 2025-05-29
 ### Added
 - Footer with links
 
 ## [0.3] - 2025-05-28
-
 ### Added
-- Heading level selector to control which heading levels to split a file by
+- Heading level selector to control which heading levels to split a file at
 
 ## [0.2] - 2025-05-26
-
 ### Added
-- Initial release
-- Basic DOCX to RTF conversion
-- Automatic file naming
 - Unicode support
 - Codepage detection
 - Comprehensive text formatting support:
@@ -29,9 +27,9 @@ All notable changes to this project will be documented in this file.
 - Proper handling of nested formatting
 
 ## [0.1] - 2025-05-25
-
 ### Added
 - Initial release
+- Basic DOCX to RTF conversion
 - Heading-based document splitting
 - Automatic file naming
 - Basic web interface 
