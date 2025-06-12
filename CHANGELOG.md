@@ -5,11 +5,6 @@ All notable changes to this project will be documented in this file.
 ## [0.6] - 2025-06-12
 ### Added
 - RTF input file support
-- RTF to HTML conversion for processing
-- Support for RTF formatting (bold, italic, underline)
-
-## [0.5] - 2025-06-11
-### Added
 - Error messages (for wrong file format and missing headers levels)
 
 ## [0.4] - 2025-05-29
