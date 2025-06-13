@@ -156,6 +156,7 @@ document.addEventListener('DOMContentLoaded', () => {
 						let text = paragraph
 							.replace(/\\[a-z0-9]+\s?/g, '')
 							.replace(/{|}/g, '')
+							.replace(/^arsid\s*/i, '')  // Remove arsid heading if present
 							.trim();
 						
 						// Convert hex escape sequences to their proper characters
