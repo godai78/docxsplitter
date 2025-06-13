@@ -8,7 +8,8 @@
 	},
 	"dependencies": {
 		"mammoth": "^1.5.0",
-		"file-saver": "^2.0.5"
+		"file-saver": "^2.0.5",
+		"rtf-parser": "^1.0.0"
 	},
 	"devDependencies": {
 		"http-server": "^14.1.1"

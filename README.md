@@ -1,12 +1,12 @@
-# DOCX Splitter v 0.5
+# DOCX Splitter v 0.6
 
-A web application that splits Microsoft Word `.docx` files by selected heading level and saves them as separate `.rtf` files.
+A web application that splits Microsoft Word `.docx` files and RTF files by selected heading level and saves them as separate `.rtf` files.
 
 ![Pepe Agent](pepeagent.gif)
 
 ## Features
 
-- Split `.docx` files by headings (H1-H6)
+- Split `.docx` and `.rtf` files by headings (H1-H6)
 - Select which heading level to split at (splits at selected level and all levels above it)
 - Clean and modern web interface
 - Automatic file naming based on headings

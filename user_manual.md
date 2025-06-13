@@ -46,3 +46,8 @@ See [technical details](technical_details.md) for, uhm, details?
 * Why did you vibe-code it, AI is killing our market!
 
   It's killing mine, too, and the markets of plenty of my friends, but I just cannot devote several weeks to learn to code a tool I will use twice. Tried before and failed.
+
+## Error codes
+
+* `No headings of the selected size present in the document.` - the uploaded documents does not have headings of the specified level. For example, you chose H1 headings as a split point, but the document only has H2 or smaller headings.
+* `Unsupported file format.` - the file format you tried to upload is not supported.
