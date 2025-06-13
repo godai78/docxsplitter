@@ -124,7 +124,7 @@ document.addEventListener('DOMContentLoaded', () => {
 					const decoder = new TextDecoder(`windows-${codepage}`);
 					const rtfContent = decoder.decode(arrayBuffer);
 					
-					console.log('=== RTF Processing Debug ===');
+					if (debug) console.log('=== RTF Processing Debug ===');
 					
 					// Skip the RTF header and font table to get to the actual content
 					const contentStart = rtfContent.indexOf('\\viewkind');
