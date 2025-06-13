@@ -152,11 +152,17 @@ document.addEventListener('DOMContentLoaded', () => {
 						const hasFontSize = paragraph.match(/\\fs(\d+)/);
 						const fontSize = hasFontSize ? parseInt(hasFontSize[1]) : 0;
 						
+						// Check for bookmark sequences
+						const hasBookmarkStart = paragraph.includes('{\\*\\bkmkstart');
+						const hasBookmarkEnd = paragraph.includes('{\\*\\bkmkend');
+						
 						// Extract the actual text, properly handling Unicode
 						let text = paragraph
 							.replace(/\\[a-z0-9]+\s?/g, '')
 							.replace(/{|}/g, '')
 							.replace(/^arsid\s*/i, '')  // Remove arsid heading if present
+							.replace(/{\\*\\bkmkstart[^}]*}/g, '')  // Remove bookmark start sequences
+							.replace(/{\\*\\bkmkend[^}]*}/g, '')    // Remove bookmark end sequences
 							.trim();
 						
 						// Convert hex escape sequences to their proper characters
@@ -173,11 +179,13 @@ document.addEventListener('DOMContentLoaded', () => {
 							text: text.substring(0, 50),
 							hasBold,
 							fontSize,
+							hasBookmarkStart,
+							hasBookmarkEnd,
 							original: paragraph.substring(0, 100)
 						});
 						
-						// Determine if this is a header based on formatting
-						if (hasBold || fontSize >= 20) {
+						// Determine if this is a header based on formatting or bookmarks
+						if (hasBold || fontSize >= 20 || (hasBookmarkStart && hasBookmarkEnd)) {
 							// Determine heading level based on font size
 							let level = 1;
 							if (fontSize >= 40) level = 1;
@@ -190,7 +198,8 @@ document.addEventListener('DOMContentLoaded', () => {
 							console.log('Found header:', {
 								text,
 								level,
-								fontSize
+								fontSize,
+								hasBookmarks: hasBookmarkStart && hasBookmarkEnd
 							});
 							
 							processedContent += `<h${level}>${text}</h${level}>\n`;
